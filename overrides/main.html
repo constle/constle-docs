@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+<!--
+  Open Graph and Twitter card tags.
+
+  Material ships a `social` plugin that renders a card per page, but it needs
+  cairosvg and Pillow at build time and would draw its own layout. The card here
+  is the designed one, so the tags are written by hand and the plugin stays off —
+  one mechanism, not two.
+
+  Absolute URLs are required: a preview crawler resolves these against nothing.
+  config.site_url is normalised by MkDocs to end in a slash.
+-->
+{% block extrahead %}
+  <!-- The home page shares the site's own name; index.md's "Overview" title is
+       a sidebar label and reads as a downgrade in a link preview. -->
+  {% set page_title = config.site_name %}
+  {% if page and not page.is_homepage %}
+    {% if page.meta and page.meta.title %}
+      {% set page_title = page.meta.title ~ " · " ~ config.site_name %}
+    {% elif page.title %}
+      {% set page_title = page.title | striptags ~ " · " ~ config.site_name %}
+    {% endif %}
+  {% endif %}
+
+  {% set page_description = config.site_description %}
+  {% if page and page.meta and page.meta.description %}
+    {% set page_description = page.meta.description %}
+  {% endif %}
+
+  {% set base = config.site_url | default("", true) %}
+  {% set image = base ~ "assets/og-image.png" %}
+  {% set canonical = page.canonical_url if page and page.canonical_url else base %}
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
+  <meta property="og:url" content="{{ canonical }}">
+  <meta property="og:image" content="{{ image }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Constle — the enforcement runtime for AI agents.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description }}">
+  <meta name="twitter:image" content="{{ image }}">
+  <meta name="twitter:image:alt" content="Constle — the enforcement runtime for AI agents.">
+{% endblock %}

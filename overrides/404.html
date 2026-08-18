@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+
+<!--
+  Custom 404.
+
+  The header stays — it carries the mark and the search box, which is the fastest
+  way out of a wrong URL — but both sidebars are dropped so the page centres the
+  way the reference does. Nothing is added beyond what the reference shows.
+
+  Links here are absolute, built from site_url rather than base_url: a 404 is
+  served for a URL that does not exist, at any depth, so a relative href would
+  resolve against the missing path.
+-->
+
+{% block site_nav %}{% endblock %}
+
+{% block content %}
+  {% set docs_root = config.site_url if config.site_url else base_url %}
+  <div class="constle-404">
+    <svg class="constle-404__icon" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M19 19 L29 29 M29 19 L19 29" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <p class="constle-404__code">404</p>
+    <p class="constle-404__message">This page isn't declared in the manifest.</p>
+    <a class="constle-404__action" href="{{ docs_root }}">Back to docs</a>
+  </div>
+{% endblock %}

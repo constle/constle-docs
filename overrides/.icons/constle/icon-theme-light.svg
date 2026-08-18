@@ -1,0 +1,13 @@
+<!-- Figma icon-theme-light.svg; stroke #2A2A2A -> currentColor, no-op clipPath
+     dropped so no Figma element id lands in the DOM. Inlined per page. -->
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.7335 10.421V13.5772L12.0001 15.1553L9.26668 13.5772V10.421L12.0001 8.84285L14.7335 10.421Z" stroke="currentColor" stroke-width="1.6"/>
+<path d="M19.2 12H22.56" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M17.0912 17.0912L19.467 19.4671" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M12 19.2V22.56" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M6.90883 17.0912L4.53295 19.4671" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M4.8 12L1.44 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M6.90883 6.90883L4.53295 4.53295" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M12 4.8V1.44" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M17.0912 6.90883L19.467 4.53295" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+</svg>
