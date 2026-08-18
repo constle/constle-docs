@@ -1,0 +1,929 @@
+/* ===========================================================================
+   Constle — brand layer over mkdocs-material
+   ---------------------------------------------------------------------------
+   Brand palette (single source of truth for the site):
+
+     Navy       #0D1117   brand navy — body text in light mode
+     Slate      #485563   secondary text, borders
+     Lavender   #6366F1   primary accent
+     Green      #22C55E   "shipped" / allowed / success
+     Orange     #F59E0B   "planned" / warning
+     Soft Gray  #F3F4F6   page ground, light mode
+     Error      #EF4444   blocked / denied / failure
+
+   The dark page ground is #111010 (--constle-ink), not Navy. That is a
+   page-background decision, not a palette entry: whether the warm black becomes
+   a named brand colour — and what happens to the favicon tile, which is still
+   Navy — has not been decided.
+
+   Material is themed by overriding its own custom properties rather than by
+   fighting its selectors, so a theme upgrade does not silently undo this file.
+   =========================================================================== */
+
+/* --- Brand fonts ---------------------------------------------------------
+   Satoshi is the brand typeface. It is free for commercial use via Fontshare
+   (ITF Free Font License) and served from their CDN — no Google Fonts entry
+   exists for it, which is why it is loaded by hand here and `theme.font` is
+   set to false in mkdocs.yml. JetBrains Mono carries code.
+   ------------------------------------------------------------------------ */
+@import url("https://api.fontshare.com/v2/css?f%5B%5D=satoshi@400,500,700,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap");
+
+:root {
+  /* ---- Raw brand tokens (scheme-independent) ---- */
+  --constle-navy: #0d1117;
+  --constle-slate: #485563;
+  --constle-lavender: #6366f1;
+  --constle-green: #22c55e;
+  --constle-orange: #f59e0b;
+  --constle-soft-gray: #f3f4f6;
+  --constle-error: #ef4444;
+
+  /* The dark-mode page ground. Deliberately warm and neutral rather than the
+     blue-tinted navy: it is what the diagrams are drawn on, and it keeps the
+     site off the default blue-black every dark docs theme lands on. Kept as its
+     own token so it cannot leak into the eight other roles Navy still fills.
+
+     The raised and sunken steps hold the same warm neutral hue and repeat the
+     lightness interval the navy trio used (roughly -1.5 and +5 points), so
+     anything that used to sit on navy-raised or navy-sunken can move across
+     without changing how far it reads from the page. */
+  --constle-ink: #111010;
+  --constle-ink-raised: #1c1a1a;
+  --constle-ink-sunken: #0b0a0a;
+
+  /* Tints/shades derived from the palette, used where the base value would
+     fail contrast or read too heavy. */
+  --constle-lavender-bright: #818cf8;
+  --constle-lavender-pale: #a5b4fc;
+  --constle-lavender-deep: #4f46e5;
+  /* One step below deep, for the hover state of a control whose rest state is
+     already deep — otherwise the button has no hover affordance at all. */
+  --constle-lavender-deeper: #4338ca;
+  --constle-slate-light: #6b7684;
+  /* Green and orange are tuned for a dark ground and drop to ~2:1 on white, so
+     light mode needs deeper cuts of both for code. */
+  --constle-green-deep: #15803d;
+  --constle-orange-deep: #b45309;
+
+  /* ---- Material overrides ---- */
+  --md-primary-fg-color: var(--constle-lavender);
+  --md-primary-fg-color--light: var(--constle-lavender-bright);
+  --md-primary-fg-color--dark: var(--constle-lavender-deep);
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+
+  --md-accent-fg-color: var(--constle-lavender);
+  --md-accent-fg-color--transparent: rgba(99, 102, 241, 0.1);
+  --md-accent-bg-color: #ffffff;
+
+  --md-text-font: "Satoshi", "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --md-code-font: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono",
+    Menlo, Consolas, monospace;
+
+  /* Semantic roles used by the custom components further down. */
+  --constle-ok: var(--constle-green);
+  --constle-warn: var(--constle-orange);
+  --constle-bad: var(--constle-error);
+}
+
+/* ===========================================================================
+   Light scheme
+   =========================================================================== */
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #ffffff;
+  --md-default-bg-color--light: var(--constle-soft-gray);
+  --md-default-fg-color: var(--constle-navy);
+  --md-default-fg-color--light: var(--constle-slate);
+  --md-default-fg-color--lighter: var(--constle-slate-light);
+  --md-default-fg-color--lightest: rgba(72, 85, 99, 0.12);
+
+  --md-typeset-color: #1c2128;
+  --md-typeset-a-color: var(--constle-lavender-deep);
+
+  --md-code-bg-color: var(--constle-soft-gray);
+  --md-code-fg-color: #22272f;
+  --md-code-hl-color: rgba(99, 102, 241, 0.16);
+
+  --constle-code-keyword: var(--constle-lavender-deep);
+  --constle-code-string: var(--constle-green-deep);
+  --constle-code-number: var(--constle-orange-deep);
+
+  /* The footer is a dark band in both schemes, so it takes the dark ground here
+     too — otherwise light mode ends on navy while every other dark surface on
+     the site has moved to ink. */
+  --md-footer-bg-color: var(--constle-ink);
+  --md-footer-bg-color--dark: var(--constle-ink-sunken);
+
+  --constle-surface: #ffffff;
+  --constle-surface-raised: var(--constle-soft-gray);
+  --constle-border: rgba(72, 85, 99, 0.18);
+  --constle-border-strong: rgba(72, 85, 99, 0.32);
+  --constle-muted: var(--constle-slate);
+  --constle-shadow: 0 1px 2px rgba(13, 17, 23, 0.06),
+    0 8px 24px -12px rgba(13, 17, 23, 0.18);
+
+  /* Header: white ground, and the brand mark in its original ink. */
+  --constle-header-bg: #ffffff;
+  --constle-header-fg: #0e141e;
+  --constle-header-muted: rgba(14, 20, 30, 0.56);
+  --constle-header-border: rgba(72, 85, 99, 0.16);
+  --constle-header-field: rgba(13, 17, 23, 0.05);
+  --constle-header-field-hover: rgba(13, 17, 23, 0.09);
+}
+
+/* ===========================================================================
+   Dark scheme — the default
+   =========================================================================== */
+[data-md-color-scheme="slate"] {
+  /* Material derives every slate value it computes rather than reads — the code
+     block's copy strip, search result meta, a few fg tints — as
+     hsla(var(--md-hue), 15%, L%, A). At 222 those all come back blue, which is
+     what was still showing through after the named surfaces moved to ink. Hue 0
+     at the same 15% saturation lands them in the ink family instead. */
+  --md-hue: 0;
+
+  --md-default-bg-color: var(--constle-ink);
+  /* Material paints admonitions, details blocks and the mobile drawer's raised
+     surfaces from this one, which is why they were the last blue-tinted things
+     left on the page. */
+  --md-default-bg-color--light: var(--constle-ink-raised);
+  --md-default-fg-color: var(--constle-soft-gray);
+  --md-default-fg-color--light: #b6bec9;
+  --md-default-fg-color--lighter: #8d97a4;
+  --md-default-fg-color--lightest: rgba(243, 244, 246, 0.12);
+
+  --md-typeset-color: #dde1e7;
+  /* The base lavender is only ~3.9:1 on navy, so links use the brighter tint. */
+  --md-typeset-a-color: var(--constle-lavender-bright);
+
+  /* Code sits on the page ground rather than a ground of its own — see the
+     syntax-highlighting block, which gives blocks a frame instead of a fill. */
+  --md-code-bg-color: var(--constle-ink);
+  --md-code-fg-color: #dfe3e9;
+  --md-code-hl-color: rgba(129, 140, 248, 0.2);
+
+  /* Same three roles, cut for a dark ground. Keywords take the brighter tint for
+     the same reason links do — base lavender is about 4:1 on ink. */
+  --constle-code-keyword: var(--constle-lavender-bright);
+  --constle-code-string: var(--constle-green);
+  --constle-code-number: var(--constle-orange);
+
+  --md-footer-bg-color: var(--constle-ink-sunken);
+  --md-footer-bg-color--dark: #080707;
+
+  --constle-surface: var(--constle-ink);
+  --constle-surface-raised: var(--constle-ink-raised);
+  --constle-border: rgba(243, 244, 246, 0.1);
+  --constle-border-strong: rgba(243, 244, 246, 0.2);
+  --constle-muted: #98a2b0;
+  --constle-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 12px 32px -16px rgba(0, 0, 0, 0.7);
+
+  /* The header band is the top of the page ground, not a separate surface, so it
+     tracks the page colour — otherwise a seam appears under the header. */
+  --constle-header-bg: var(--constle-ink);
+  --constle-header-fg: var(--constle-soft-gray);
+  --constle-header-muted: rgba(243, 244, 246, 0.56);
+  --constle-header-border: rgba(243, 244, 246, 0.08);
+  --constle-header-field: rgba(243, 244, 246, 0.09);
+  --constle-header-field-hover: rgba(243, 244, 246, 0.14);
+}
+
+/* ===========================================================================
+   Header
+   ---------------------------------------------------------------------------
+   The header sits on the ground colour rather than the accent, which keeps
+   lavender meaningful — it marks interaction, not chrome. It follows the
+   colour scheme in both directions: navy in dark mode, white in light, with
+   the brand mark inheriting the text colour either way.
+
+   --md-primary-bg-color is redefined here rather than at :root so the change
+   is confined to the header subtree; Material uses it for the header text,
+   the search placeholder and the repository block, and nothing outside the
+   bar should shift with it.
+   =========================================================================== */
+.md-header {
+  background-color: var(--constle-header-bg);
+  color: var(--constle-header-fg);
+  border-bottom: 1px solid var(--constle-header-border);
+  box-shadow: none;
+  --md-primary-bg-color: var(--constle-header-fg);
+  --md-primary-bg-color--light: var(--constle-header-muted);
+}
+
+/* ===========================================================================
+   Typography
+   =========================================================================== */
+body,
+input,
+button {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.md-typeset {
+  font-size: 0.79rem;
+  line-height: 1.72;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset h1 {
+  font-size: 2.05em;
+  font-weight: 900;
+  letter-spacing: -0.033em;
+  margin-bottom: 0.5em;
+}
+
+.md-typeset h2 {
+  font-size: 1.42em;
+  margin-top: 2.2em;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--constle-border);
+}
+
+/* The first h2 on a page has the page title above it already. */
+.md-typeset h1 + h2 {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 1.2em;
+}
+
+.md-typeset h3 {
+  font-size: 1.12em;
+  margin-top: 1.9em;
+}
+
+.md-typeset a {
+  text-decoration-color: rgba(129, 140, 248, 0.4);
+  text-underline-offset: 0.18em;
+  transition: color 120ms ease;
+}
+
+.md-typeset a:hover {
+  color: var(--constle-lavender-pale);
+}
+
+/* --- Header lockup -------------------------------------------------------
+   The brand mark (theme.icon.logo) sits beside the site name, which is set in
+   Satoshi to stand in for the drawn wordmark. Using the mark plus live text
+   rather than the full lockup SVG keeps the name crisp and searchable at
+   header size, where the drawn wordmark's strokes would go thin.
+
+   The mark is an inlined icon, so `fill: currentcolor` gives it the header's
+   ink for free — no second logo file and no per-scheme image swap.
+   ------------------------------------------------------------------------ */
+.md-header__title .md-header__topic:first-child .md-ellipsis {
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: -0.03em;
+  color: var(--constle-header-fg);
+}
+
+.md-header__button.md-logo svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: currentcolor;
+}
+
+.md-header__button.md-logo {
+  padding: 0.2rem 0.1rem 0.2rem 0.4rem;
+  opacity: 1;
+}
+
+/* --- Repository block ----------------------------------------------------
+   Kept, but demoted: small muted text next to the icon rather than a
+   two-line block. The star count and the release tag were the loudest thing
+   in the bar and competed with the logo for the eye; both are one click away
+   on GitHub, and the version is stated in the docs where it matters.
+   ------------------------------------------------------------------------ */
+.md-header__source {
+  width: 9rem;
+  max-width: 9rem;
+  margin-left: 0.8rem;
+}
+
+.md-source {
+  font-size: 0.6rem;
+  color: var(--constle-header-muted);
+  transition: color 120ms ease;
+}
+
+.md-source:hover {
+  color: var(--constle-header-fg);
+  opacity: 1;
+}
+
+.md-source__icon svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin: 0.775rem;
+}
+
+.md-source__repository {
+  font-weight: 500;
+  font-size: 0.6rem;
+  line-height: 2.4rem;
+}
+
+.md-source__facts {
+  display: none;
+}
+
+/* ===========================================================================
+   Code
+   =========================================================================== */
+.md-typeset code,
+.md-typeset pre > code {
+  font-size: 0.82em;
+  font-feature-settings: "kern" 1;
+}
+
+.md-typeset :not(pre) > code {
+  padding: 0.12em 0.38em;
+  border-radius: 4px;
+  border: 1px solid var(--constle-border);
+  background-color: var(--md-code-bg-color);
+}
+
+.md-typeset pre > code {
+  border-radius: 8px;
+  border: 1px solid var(--constle-border);
+  padding: 0.85rem 1rem;
+}
+
+.md-typeset .highlight:focus-within > pre > code {
+  box-shadow: 0 0 0 2px var(--constle-lavender);
+}
+
+.md-clipboard {
+  color: var(--constle-muted);
+}
+
+.md-clipboard:hover {
+  color: var(--constle-lavender-bright);
+}
+
+/* Terminal transcripts in the README are fenced without a language. Rendering
+   them flat — no syntax colouring — keeps them reading as output, not source. */
+.md-typeset .highlight:not([class*="language-"]) > pre > code,
+.md-typeset pre > code.language-text {
+  color: var(--md-default-fg-color--light);
+}
+
+/* --- Syntax highlighting -------------------------------------------------
+   Pygments' own token classes, remapped onto the brand palette. This overrides
+   the specific classes rather than swapping the Pygments style wholesale, so
+   Material keeps generating the markup it expects and only the colours move.
+
+   Five roles carry meaning and everything else stays in the body ink: keywords
+   are the accent, strings are the "allowed" green, numbers and constants are
+   the orange (which the palette otherwise spends nowhere), comments and
+   punctuation recede to the muted tone. Both colour sets are scheme-aware —
+   see --constle-code-* — because green and orange tuned for a dark ground fall
+   under 2:1 on white.
+   ------------------------------------------------------------------------ */
+
+/* Keywords, and the structural tokens that play the same part in other
+   languages: YAML keys and HTML tags are Name.Tag, not Keyword, but they are
+   what gives those files their shape. */
+.md-typeset .highlight .k,
+.md-typeset .highlight .kd,
+.md-typeset .highlight .kn,
+.md-typeset .highlight .kp,
+.md-typeset .highlight .kr,
+.md-typeset .highlight .ow,
+.md-typeset .highlight .nt {
+  color: var(--constle-code-keyword);
+  font-weight: 700;
+}
+
+/* Types read as keywords but without the extra weight — in a long signature the
+   bold gets noisy. */
+.md-typeset .highlight .kt,
+.md-typeset .highlight .nc,
+.md-typeset .highlight .nn {
+  color: var(--constle-code-keyword);
+}
+
+.md-typeset .highlight .s,
+.md-typeset .highlight .s1,
+.md-typeset .highlight .s2,
+.md-typeset .highlight .sa,
+.md-typeset .highlight .sb,
+.md-typeset .highlight .sc,
+.md-typeset .highlight .dl,
+.md-typeset .highlight .se,
+.md-typeset .highlight .sh,
+.md-typeset .highlight .si,
+.md-typeset .highlight .sx,
+.md-typeset .highlight .sr,
+.md-typeset .highlight .ss {
+  color: var(--constle-code-string);
+}
+
+/* Numbers, and the named constants that behave like them: True, False, None. */
+.md-typeset .highlight .m,
+.md-typeset .highlight .mb,
+.md-typeset .highlight .mf,
+.md-typeset .highlight .mh,
+.md-typeset .highlight .mi,
+.md-typeset .highlight .mo,
+.md-typeset .highlight .il,
+.md-typeset .highlight .kc,
+.md-typeset .highlight .no,
+.md-typeset .highlight .l {
+  color: var(--constle-code-number);
+}
+
+.md-typeset .highlight .c,
+.md-typeset .highlight .c1,
+.md-typeset .highlight .cm,
+.md-typeset .highlight .ch,
+.md-typeset .highlight .cs,
+.md-typeset .highlight .cp,
+.md-typeset .highlight .cpf,
+/* A docstring is a comment by intent, even though Pygments files it as a
+   string — it is deliberately not in the string list above. */
+.md-typeset .highlight .sd {
+  color: var(--constle-muted);
+  font-style: italic;
+}
+
+.md-typeset .highlight .nf,
+.md-typeset .highlight .fm {
+  color: var(--md-code-fg-color);
+  font-weight: 500;
+}
+
+.md-typeset .highlight .o,
+.md-typeset .highlight .p,
+.md-typeset .highlight .w {
+  color: var(--constle-muted);
+}
+
+/* Names with no special role — variables, attributes, builtins, decorators —
+   stay in the body ink so the five that do mean something keep their weight. */
+.md-typeset .highlight .n,
+.md-typeset .highlight .na,
+.md-typeset .highlight .nb,
+.md-typeset .highlight .nd,
+.md-typeset .highlight .ni,
+.md-typeset .highlight .nl,
+.md-typeset .highlight .nv,
+.md-typeset .highlight .nx,
+.md-typeset .highlight .py,
+.md-typeset .highlight .bp {
+  color: var(--md-code-fg-color);
+}
+
+/* Line numbers and the shell prompt are furniture, not code. */
+.md-typeset .highlight .linenos,
+.md-typeset .highlight .lineno,
+.md-typeset .highlight .gp {
+  color: var(--constle-muted);
+  user-select: none;
+}
+
+.md-typeset .highlight .err {
+  color: var(--constle-error);
+  background-color: transparent;
+}
+
+/* ===========================================================================
+   Tables — the README leans on them heavily
+   =========================================================================== */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--constle-border);
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 0.72rem;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--constle-surface-raised);
+  color: var(--md-default-fg-color);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid var(--constle-border-strong);
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--constle-border);
+  vertical-align: top;
+}
+
+.md-typeset table:not([class]) tr:hover {
+  background-color: var(--md-accent-fg-color--transparent);
+}
+
+/* ===========================================================================
+   Admonitions — retinted to the brand palette
+   =========================================================================== */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 8px;
+  border-width: 1px;
+  border-left-width: 3px;
+  box-shadow: none;
+  font-size: 0.74rem;
+  background-color: var(--constle-surface-raised);
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+:root {
+  --md-admonition-icon--shipped: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>');
+  --md-admonition-icon--planned: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m1 5h-2v6l5.25 3.15.75-1.23-4-2.37z"/></svg>');
+}
+
+.md-typeset .admonition.shipped,
+.md-typeset details.shipped {
+  border-color: var(--constle-green);
+}
+.md-typeset .shipped > .admonition-title,
+.md-typeset .shipped > summary {
+  background-color: rgba(34, 197, 94, 0.11);
+}
+.md-typeset .shipped > .admonition-title::before,
+.md-typeset .shipped > summary::before {
+  background-color: var(--constle-green);
+  -webkit-mask-image: var(--md-admonition-icon--shipped);
+  mask-image: var(--md-admonition-icon--shipped);
+}
+
+.md-typeset .admonition.planned,
+.md-typeset details.planned {
+  border-color: var(--constle-orange);
+}
+.md-typeset .planned > .admonition-title,
+.md-typeset .planned > summary {
+  background-color: rgba(245, 158, 11, 0.11);
+}
+.md-typeset .planned > .admonition-title::before,
+.md-typeset .planned > summary::before {
+  background-color: var(--constle-orange);
+  -webkit-mask-image: var(--md-admonition-icon--planned);
+  mask-image: var(--md-admonition-icon--planned);
+}
+
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: var(--constle-orange);
+}
+.md-typeset .admonition.danger,
+.md-typeset details.danger,
+.md-typeset .admonition.failure,
+.md-typeset details.failure {
+  border-color: var(--constle-error);
+}
+
+/* ===========================================================================
+   Custom components
+   =========================================================================== */
+
+/* --- Diagrams -------------------------------------------------------------
+   Figma exports, one file per colour scheme, swapped by Material's
+   #only-light / #only-dark convention. Their text is outlined rather than live,
+   so each <img> carries a full description in alt instead of a short label.
+
+   The drawings are wider than the content column. On a desktop they fit it and
+   read fine; on a phone, scaling a 1000px drawing into 350px would put every
+   label under the legibility floor, so below the tablet breakpoint they keep a
+   usable width and scroll sideways inside their own figure instead. The scroll
+   is on the figure, never on the page. --wide raises that floor for the
+   drawings that need it.
+   ------------------------------------------------------------------------ */
+.md-typeset .constle-diagram {
+  display: block;
+  width: auto;
+  max-width: none;
+  margin: 1.7rem 0 2.1rem;
+  overflow-x: auto;
+  text-align: left;
+  /* Collapses the inline image's baseline gap. Doing it here rather than with
+     display:block on the image itself is deliberate: the scheme swap works by
+     setting display:none on the image for the other scheme, and a display rule
+     of ours would win on load order and show both. */
+  line-height: 0;
+}
+
+/* No border or radius here: every diagram draws its own inset 1px frame and
+   16px corner inside the artboard, so adding CSS ones doubles the edge and
+   traces a second, mismatched radius around it. */
+.md-typeset .constle-diagram img {
+  width: 100%;
+  height: auto;
+}
+
+@media screen and (max-width: 59.984375em) {
+  .md-typeset .constle-diagram img {
+    min-width: 30rem;
+  }
+
+  .md-typeset .constle-diagram--wide img {
+    min-width: 40rem;
+  }
+}
+
+.md-typeset .constle-diagram figcaption {
+  margin-top: 0.75rem;
+  max-width: 44rem;
+  font-size: 0.68rem;
+  line-height: 1.55; /* restores what the figure zeroed out */
+  color: var(--constle-muted);
+  text-align: left;
+}
+
+/* --- Status pills --- */
+.constle-pill {
+  display: inline-block;
+  padding: 0.14em 0.62em;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 0.08em;
+  border: 1px solid currentcolor;
+}
+
+.constle-pill--shipped {
+  color: var(--constle-green);
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.constle-pill--planned {
+  color: var(--constle-orange);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.constle-pill--blocked {
+  color: var(--constle-error);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* ===========================================================================
+   Sidebar navigation
+   ---------------------------------------------------------------------------
+   With the tabs gone this is the only way around the site, so every page is
+   listed at once and the section labels are set as quiet headings rather than
+   as links competing with their own children.
+   =========================================================================== */
+.md-nav__title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* On desktop the site name is already in the header, one line above; repeating
+   it at the top of the sidebar just costs a row. The mobile drawer keeps it,
+   because there it is the drawer's own heading. */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary .md-nav--primary > .md-nav__title {
+    display: none;
+  }
+}
+
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+  font-size: 0.61rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--constle-muted);
+}
+
+.md-nav--primary .md-nav__item--section {
+  margin-top: 1.5em;
+}
+
+/* A section whose heading is itself a page (navigation.indexes) still has to
+   read as a link, so it keeps the hover and active treatment. */
+.md-nav--primary .md-nav__item--section > a.md-nav__link:hover,
+.md-nav--primary .md-nav__item--section > a.md-nav__link--active {
+  color: var(--constle-lavender-bright);
+}
+
+.md-nav__link--active,
+.md-nav__link:focus,
+.md-nav__link:hover {
+  color: var(--constle-lavender-bright);
+}
+
+.md-nav__item .md-nav__link--active {
+  font-weight: 700;
+}
+
+/* --- The active row is a filled pill -------------------------------------
+   Where you are is marked by a solid lavender fill with a white label, not by
+   recoloured text. The fill carries the contrast in both schemes, so nothing
+   about it swaps — no dark-on-lavender variant in light mode.
+
+   Every row in the nav gets the pill's padding, active or not, so the labels
+   stay in one column and only the fill appears on the current page; the
+   negative margin pulls the row back out to the list's edge so the text does
+   not shift right to make room for its own padding.
+
+   `a.` is load-bearing. Material stamps --active on two other things inside
+   this same nav: the <label for="__toc"> that opens the table of contents on
+   small screens, and the heading links of the TOC it nests here. Neither is a
+   page, so neither gets a pill.
+   ------------------------------------------------------------------------ */
+.md-sidebar--primary .md-nav--primary a.md-nav__link {
+  padding: 8px 12px;
+  margin-top: 2px;
+  margin-left: -12px;
+  border-radius: 8px;
+}
+
+/* Same pattern for the top nav's active section, if tabs are ever switched back
+   on — navigation.tabs is off, so .md-tabs is not currently rendered. */
+.md-tabs__link {
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.md-sidebar--primary .md-nav--primary a.md-nav__link--active,
+.md-tabs__link--active {
+  /* The deep cut, not the base lavender: white on #6366F1 measures 4.47:1,
+     which is under AA for a 14px label. #4F46E5 clears it. This is the only
+     place the deeper value is used as a fill — everywhere else the base
+     lavender is an outline, a rule or text on a transparent ground, none of
+     which have the same problem. */
+  background-color: var(--constle-lavender-deep);
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Material recolours links on hover; the pill has to keep its own label. */
+.md-sidebar--primary .md-nav--primary a.md-nav__link--active:hover,
+.md-sidebar--primary .md-nav--primary a.md-nav__link--active:focus,
+.md-tabs__link--active:hover,
+.md-tabs__link--active:focus {
+  color: #ffffff;
+}
+
+/* The table of contents Material nests inside this nav for small screens is not
+   site navigation — it keeps the quieter marker below. */
+.md-sidebar--primary .md-nav--primary .md-nav--secondary a.md-nav__link {
+  padding: 0;
+  margin-left: 0;
+  border-radius: 0;
+}
+
+.md-sidebar--primary .md-nav--primary .md-nav--secondary a.md-nav__link--active {
+  background-color: transparent;
+  color: var(--constle-lavender-bright);
+  font-weight: 700;
+}
+
+/* The right-hand table of contents keeps the rule marker: it tracks the heading
+   you are reading, which moves as you scroll, and a filled pill sliding down
+   the page would pull the eye off the prose. */
+.md-sidebar--secondary .md-nav__link--active {
+  border-left: 2px solid var(--constle-lavender);
+  padding-left: 0.5rem;
+  margin-left: -0.62rem;
+}
+
+.md-sidebar--secondary .md-nav__title {
+  font-size: 0.61rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--constle-muted);
+}
+
+/* ===========================================================================
+   Search and footer
+   =========================================================================== */
+.md-search__form {
+  border-radius: 7px;
+  background-color: var(--constle-header-field);
+}
+
+.md-search__form:hover {
+  background-color: var(--constle-header-field-hover);
+}
+
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  border-radius: 7px 7px 0 0;
+}
+
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color--dark);
+}
+
+/* Selection uses the accent, in both schemes. */
+::selection {
+  background-color: rgba(99, 102, 241, 0.32);
+}
+
+/* ===========================================================================
+   404
+   ---------------------------------------------------------------------------
+   Markup rather than the two exported PNGs: the same four elements answer to
+   the scheme tokens, so one page covers both modes and stays crisp at any
+   size. Both sidebars are dropped in the template, so this centres in the full
+   width below the header.
+   =========================================================================== */
+.constle-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Fills what is left of the viewport under the header, so the block sits on
+     the optical centre rather than at the top of an empty page. */
+  min-height: 68vh;
+  padding: 3rem 1.2rem 4rem;
+  text-align: center;
+}
+
+.constle-404__icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  color: var(--md-default-fg-color);
+}
+
+.constle-404__code {
+  margin: 1.1rem 0 0;
+  font-family: var(--md-code-font);
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  color: var(--md-default-fg-color);
+}
+
+.constle-404__message {
+  margin: 0.7rem 0 0;
+  font-size: 0.8rem;
+  color: var(--constle-muted);
+}
+
+/* Same pill as the active nav row — solid accent, 8px, white label in both
+   schemes, and the same deep cut for the same reason: white on the base
+   lavender is 4.47:1, and 15px bold is not large text by WCAG's definition
+   (that needs 18.66px), so the exemption does not apply.
+
+   Scoped through .md-typeset because Material wraps the content block in it, so
+   `.md-typeset a` would otherwise out-specify a bare class here and repaint the
+   label in the link colour. */
+.md-typeset .constle-404__action {
+  display: inline-block;
+  margin-top: 1.9rem;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background-color: var(--constle-lavender-deep);
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.md-typeset .constle-404__action:hover,
+.md-typeset .constle-404__action:focus {
+  background-color: var(--constle-lavender-deeper);
+  color: #ffffff;
+}
+
+/* The 404 drops both sidebars, so the header's drawer button would open an
+   empty panel. It only renders below 76.25em, which is why it survived the
+   desktop screenshot of the page. */
+body:has(.constle-404) .md-header__button[for="__drawer"] {
+  display: none;
+}
+
+/* ===========================================================================
+   Reduced motion
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .md-source,
+  .md-typeset a,
+  .md-typeset .constle-404__action {
+    transition: none;
+  }
+}
+
+/* Wide tables and terminal transcripts scroll inside their own box rather than
+   pushing the page sideways. */
+.md-typeset .md-typeset__table,
+.md-typeset .highlight {
+  overflow-x: auto;
+}

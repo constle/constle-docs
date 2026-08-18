@@ -1,0 +1,9 @@
+# Documentation site dependencies.
+#
+# Pinned so a docs build in CI matches a docs build on a laptop. Bump
+# deliberately; mkdocs-material's minor releases occasionally change theme
+# internals that docs/stylesheets/brand.css overrides.
+#
+#   python -m venv .venv && .venv/bin/pip install -r docs/requirements.txt
+#   .venv/bin/mkdocs serve
+mkdocs-material==9.7.7

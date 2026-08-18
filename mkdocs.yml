@@ -1,0 +1,183 @@
+site_name: Constle
+site_description: >-
+  A runtime that enforces what an AI agent is allowed to do — network, spend,
+  approvals, identity — from outside the agent.
+site_author: Constle
+# The site's own address. docs/CNAME names the same host and ships in this
+# repository, so GitHub Pages serves the site there as soon as DNS resolves and
+# the custom domain is set; until then Pages answers on
+# constle.github.io/constle-docs/ and redirects.
+#
+# This is not cosmetic. Every absolute URL on the site is built from it — the
+# canonical link, og:url, the og:image and twitter:image a link preview fetches,
+# and the 404's way back to the docs, which cannot be relative because a 404 is
+# served for a path that does not exist. It moved off constle.github.io/constle/
+# when the docs left that repository: that address is the *product* repo's
+# project page and never served this site.
+site_url: https://docs.constle.dev/
+repo_url: https://github.com/constle/constle
+repo_name: constle/constle
+# repo_url stays on the product repository — that is what a reader clicking
+# through from the docs wants to find. The edit link cannot use it, though: the
+# pages live here, so it is given as a full URL against this repo instead.
+edit_uri_template: https://github.com/constle/constle-docs/edit/main/docs/{path}
+copyright: Apache 2.0 — the Agentfile format is an open, auditable standard.
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  custom_dir: overrides
+  # The brand mark is served as a Material *icon* rather than theme.logo, so it
+  # is inlined as SVG and inherits the header's text colour. That is what lets
+  # the header follow the colour scheme: light text on ink in dark mode, the
+  # original #0E141E ink on white in light mode, from one file.
+  # assets/favicon.svg still carries its own #111010 tile — a browser tab strip
+  # has no scheme to inherit from.
+  favicon: assets/favicon.svg
+  icon:
+    logo: constle/mark
+    repo: fontawesome/brands/github
+
+  font: false # brand fonts are loaded by hand in brand.css — see extra_css
+
+  palette:
+    # Dark is the default: it matches the brand's visual direction.
+    #
+    # The toggle icons are the brand pair rather than Material's weather-night /
+    # weather-sunny: a faceted hexagon sun echoing the mark's cut-gem angles, and
+    # a plain crescent. Each icon shows the scheme that is currently active, so
+    # the crescent belongs to slate and the sun to default. Both are drawn in
+    # currentColor, so one file per shape covers both schemes.
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: constle/icon-theme-dark
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: constle/icon-theme-light
+        name: Switch to dark mode
+
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    # One full sidebar instead of tabs: every page in the site is visible at
+    # once, and the top bar stays a thin strip.
+    - navigation.sections
+    - navigation.indexes
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - content.action.edit
+
+extra_css:
+  - stylesheets/brand.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/constle/constle
+      name: Constle on GitHub
+  generator: false
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Link to this section
+      toc_depth: 3
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  # Snippets is what keeps this site from duplicating the README and the spec.
+  # Pages pull marked sections out of the real files at build time, so the
+  # sources of truth stay where they are and the docs cannot drift from them.
+  - pymdownx.snippets:
+      base_path:
+        # The README sections and spec/agent-manifest.md that these pages pull
+        # in live in constle/constle, not here. CI checks that repository out to
+        # _upstream/ before building; see README.md for the local equivalent.
+        # Without it the build fails at the first --8<-- rather than quietly
+        # publishing pages with the prose missing, which is the intended
+        # behaviour: check_paths is on for exactly this reason.
+        - _upstream
+        - docs
+        # The repository root is deliberately NOT on this list. This repo has a
+        # README.md of its own, and with the root searched first `--8<--
+        # "README.md:pitch"` resolves to that file instead of the source one and
+        # fails looking for a section it will never contain. Leaving the root
+        # off means the only README snippets can come from is _upstream.
+      check_paths: true
+      restrict_base_path: false
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Rewrites repo-relative links (LICENSE, spec/a2a.md, #known-limitations …)
+# that arrive inside snippet-included README text so they resolve on the site.
+hooks:
+  - hooks/repo_links.py
+
+plugins:
+  - search
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+# Nested so the sidebar reads as sections rather than a flat list. Every one of
+# the eight pages is its own row: nothing is folded into a section heading, so
+# nothing needs opening to be found.
+#
+# navigation.indexes is enabled but inert here — MkDocs only treats a section's
+# first child as its index page when that file is literally named index.md. To
+# make the "Architecture" heading itself clickable, move docs/architecture.md
+# to docs/architecture/index.md (the URL does not change) and drop the label.
+nav:
+  - Overview: index.md
+  - Get started: quickstart.md
+  - Architecture:
+      - The four layers: architecture.md
+      - Network isolation: network-isolation.md
+      - Known limitations: limitations.md
+  - Reference:
+      - The Agentfile: agentfile.md
+      - Agentfile field reference: reference/agent-manifest.md
+      - CLI: cli.md

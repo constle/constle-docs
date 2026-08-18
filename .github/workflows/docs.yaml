@@ -1,0 +1,112 @@
+name: Docs
+
+# Builds the documentation site on every push and pull request, and publishes
+# it to GitHub Pages on pushes to main.
+#
+# This repository holds the pages; most of the prose does not live here. The
+# pages pull marked sections out of constle/constle's README.md and spec/ with
+# pymdownx.snippets, so that repository is checked out to _upstream/ before the
+# build and the site is assembled from both.
+#
+# One consequence worth knowing: a change to the README in constle/constle does
+# not trigger this workflow, because the push event that would carry it happens
+# in the other repository. Until a dispatch is wired up from there, a prose
+# change lands on the site at the next docs push, or when this workflow is run
+# by hand from the Actions tab.
+#
+# BEFORE THE FIRST DEPLOY, one manual step is required:
+#   Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Until that is set, the `deploy` job fails at the `deploy-pages` step. The
+# `build` job needs no setup and is safe to run immediately.
+#
+# The site is also built on pull requests so a docs change that breaks the
+# build is caught in review rather than on main. That run does not publish.
+
+on:
+  push:
+    branches: [main]
+    # No path filter. Everything in this repository is the docs site, and the
+    # prose it pulls in lives elsewhere, so there is nothing here that is not
+    # worth a rebuild.
+  pull_request:
+  # Allows a build or deploy to be triggered by hand from the Actions tab. This
+  # is also how a prose change made in constle/constle reaches the site before
+  # the next commit here.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time. In-progress runs are allowed to finish rather than
+# being cancelled, so a half-published site is never left behind.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Build the site. Runs everywhere, publishes nothing.
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the docs
+        uses: actions/checkout@v4
+        with:
+          # mkdocs-material's git-based plugins read history; a shallow clone
+          # is enough today but full history keeps that option open cheaply.
+          fetch-depth: 0
+
+      # The pages are here; roughly three quarters of the prose is not. Snippets
+      # resolves README and spec sections against this checkout — see the
+      # base_path list in mkdocs.yml. Pinned to main deliberately: the site is
+      # meant to track what is released there, not a moving branch.
+      - name: Check out the Constle source for snippet includes
+        uses: actions/checkout@v4
+        with:
+          repository: constle/constle
+          ref: main
+          path: _upstream
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r docs/requirements.txt
+
+      # --strict turns MkDocs warnings into failures, so a broken internal
+      # link or an unresolvable snippet fails CI instead of shipping a 404.
+      - name: Build site
+        run: mkdocs build --strict
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  # ---------------------------------------------------------------------------
+  # Publish to GitHub Pages. Only on main, never from a pull request.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
